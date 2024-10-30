@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas de Autenticación y Eventos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Pruebas de Autenticación y Eventos</h1>
+
+    <!-- Formulario de Registro -->
+    <h2>Registro de Usuario</h2>
+    <form id="registerForm">
+        <label for="username">Username:</label>
+        <input type="text" id="registerUsername" required>
+        <label for="password">Password:</label>
+        <input type="password" id="registerPassword" required>
+        <button type="submit">Registrar</button>
+    </form>
+    <p id="registerResponse"></p>
+
+    <!-- Formulario de Login -->
+    <h2>Login de Usuario</h2>
+    <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="loginUsername" required>
+        <label for="password">Password:</label>
+        <input type="password" id="loginPassword" required>
+        <button type="submit">Login</button>
+    </form>
+    <p id="loginResponse"></p>
+
+    <!-- Formulario de Creación de Evento -->
+    <h2>Crear Evento</h2>
+    <form id="createEventForm">
+        <label for="nombre">Nombre del Evento:</label>
+        <input type="text" id="eventName" required>
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="eventDescription" required>
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="eventDate" required>
+        <label for="ubicacion">Ubicación:</label>
+        <input type="text" id="eventLocation" required>
+        <label for="tipoDeporte">Tipo de Deporte:</label>
+        <input type="text" id="eventType" required>
+        <button type="submit">Crear Evento</button>
+    </form>
+    <p id="createEventResponse"></p>
+
+    <!-- Obtener Todos los Eventos -->
+    <h2>Obtener Todos los Eventos</h2>
+    <button id="getAllEventsButton">Obtener Todos los Eventos</button>
+    <p id="getAllEventsResponse"></p>
+
+    <!-- Obtener Evento por ID -->
+    <h2>Obtener Evento por ID</h2>
+    <form id="getEventByIdForm">
+        <label for="getEventId">ID del Evento:</label>
+        <input type="text" id="getEventId" required>
+        <button type="submit">Obtener Evento</button>
+    </form>
+    <p id="getEventByIdResponse"></p>
+
+    <!-- Actualizar Evento -->
+    <h2>Actualizar Evento</h2>
+    <form id="updateEventForm">
+        <label for="eventId">ID del Evento a Actualizar:</label>
+        <input type="text" id="updateEventId" required>
+        <label for="nombre">Nombre del Evento:</label>
+        <input type="text" id="updateEventName" required>
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="updateEventDescription" required>
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="updateEventDate" required>
+        <label for="ubicacion">Ubicación:</label>
+        <input type="text" id="updateEventLocation" required>
+        <label for="tipoDeporte">Tipo de Deporte:</label>
+        <input type="text" id="updateEventType" required>
+        <button type="submit">Actualizar Evento</button>
+    </form>
+    <p id="updateEventResponse"></p>
+
+    <!-- Eliminar Evento -->
+    <h2>Eliminar Evento</h2>
+    <form id="deleteEventForm">
+        <label for="deleteEventId">ID del Evento a Eliminar:</label>
+        <input type="text" id="deleteEventId" required>
+        <button type="submit">Eliminar Evento</button>
+    </form>
+    <p id="deleteEventResponse"></p>
+
+    <!-- Obtener Próximos Eventos -->
+    <h2>Obtener Próximos Eventos</h2>
+    <button id="getUpcomingEventsButton">Obtener Próximos Eventos</button>
+    <p id="getUpcomingEventsResponse"></p>
+
+    <!-- Filtrar Eventos por Deporte -->
+    <h2>Filtrar Eventos por Deporte</h2>
+    <form id="filterBySportForm">
+        <label for="sportType">Tipo de Deporte:</label>
+        <input type="text" id="sportType" required>
+        <button type="submit">Filtrar por Deporte</button>
+    </form>
+    <p id="filterBySportResponse"></p>
+
+    <!-- Filtrar Eventos por Rango de Fechas -->
+    <h2>Filtrar Eventos por Rango de Fechas</h2>
+    <form id="filterByDateForm">
+        <label for="fromDate">Desde:</label>
+        <input type="date" id="fromDate" required>
+        <label for="toDate">Hasta:</label>
+        <input type="date" id="toDate" required>
+        <button type="submit">Filtrar por Fecha</button>
+    </form>
+    <p id="filterByDateResponse"></p>
+
+    <!-- JavaScript -->
+    <script>
+        let token = '';
+
+        // Registro de usuario
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/users/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                document.getElementById('registerResponse').innerText = data.message || JSON.stringify(data);
+            } catch (error) {
+                document.getElementById('registerResponse').innerText = 'Error en el registro';
+            }
+        });
+
+        // Login de usuario
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/users/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+
+                if (data.token) {
+                    token = data.token;
+                    document.getElementById('loginResponse').innerText = `Token: ${token}`;
+                } else {
+                    document.getElementById('loginResponse').innerText = JSON.stringify(data);
+                }
+            } catch (error) {
+                document.getElementById('loginResponse').innerText = 'Error en el login';
+            }
+        });
+
+        // Crear evento
+        document.getElementById('createEventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('eventName').value;
+            const descripcion = document.getElementById('eventDescription').value;
+            const fecha = document.getElementById('eventDate').value;
+            const ubicacion = document.getElementById('eventLocation').value;
+            const tipoDeporte = document.getElementById('eventType').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/events', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ nombre, descripcion, fecha, ubicacion, tipoDeporte })
+                });
+                const data = await response.json();
+                document.getElementById('createEventResponse').innerText = data.message || JSON.stringify(data);
+            } catch (error) {
+                document.getElementById('createEventResponse').innerText = 'Error al crear evento';
+            }
+        });
+
+        // Obtener todos los eventos
+        document.getElementById('getAllEventsButton').addEventListener('click', async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/events', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('getAllEventsResponse').innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('getAllEventsResponse').innerText = 'Error al obtener eventos';
+            }
+        });
+
+        // Obtener evento por ID
+        document.getElementById('getEventByIdForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const eventId = document.getElementById('getEventId').value;
+            try {
+                const response = await fetch(`http://localhost:3000/api/events/${eventId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('getEventByIdResponse').innerText = JSON.stringify(data, null, 2);
+                } else {
+                    document.getElementById('getEventByIdResponse').innerText = data.error || 'Error al obtener el evento';
+                }
+            } catch (error) {
+                document.getElementById('getEventByIdResponse').innerText = 'Error al obtener el evento';
+            }
+        });
+
+        // Actualizar evento
+        document.getElementById('updateEventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const eventId = document.getElementById('updateEventId').value;
+            const nombre = document.getElementById('updateEventName').value;
+            const descripcion = document.getElementById('updateEventDescription').value;
+            const fecha = document.getElementById('updateEventDate').value;
+            const ubicacion = document.getElementById('updateEventLocation').value;
+            const tipoDeporte = document.getElementById('updateEventType').value;
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/events/${eventId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ nombre, descripcion, fecha, ubicacion, tipoDeporte })
+                });
+                const data = await response.json();
+                document.getElementById('updateEventResponse').innerText = data.message || JSON.stringify(data);
+            } catch (error) {
+                document.getElementById('updateEventResponse').innerText = 'Error al actualizar evento';
+            }
+        });
+
+        // Eliminar evento
+        document.getElementById('deleteEventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const eventId = document.getElementById('deleteEventId').value;
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/events/${eventId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('deleteEventResponse').innerText = data.message || JSON.stringify(data);
+            } catch (error) {
+                document.getElementById('deleteEventResponse').innerText = 'Error al eliminar evento';
+            }
+        });
+
+        // Obtener próximos eventos
+        document.getElementById('getUpcomingEventsButton').addEventListener('click', async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/events/upcoming', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('getUpcomingEventsResponse').innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('getUpcomingEventsResponse').innerText = 'Error al obtener próximos eventos';
+            }
+        });
+
+        // Filtrar eventos por deporte
+        document.getElementById('filterBySportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const sportType = document.getElementById('sportType').value;
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/events/filter?type=${sportType}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('filterBySportResponse').innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('filterBySportResponse').innerText = 'Error al filtrar eventos por deporte';
+            }
+        });
+
+        // Filtrar eventos por rango de fechas
+        document.getElementById('filterByDateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const from = document.getElementById('fromDate').value;
+            const to = document.getElementById('toDate').value;
+            try {
+                const response = await fetch(`http://localhost:3000/api/events/date?from=${from}&to=${to}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('filterByDateResponse').innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('filterByDateResponse').innerText = 'Error al filtrar eventos por fecha';
+            }
+        });
+
+    </script>
+</body>
+
+</html>
